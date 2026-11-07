@@ -1,14 +1,72 @@
 import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import logo from './assets/logo.png'
+import logo4 from './assets/logo4.png'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [currentView, setCurrentView] = useState('home')
+  const [searchType, setSearchType] = useState('card')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const Home=() => {
+    setSearchQuery('')
+    setSearchType('card')
+  }
 
   return (
     <>
+      <div className='app-container'>
+
+        {/*Barra de navegacion*/}
+        <nav className='navbar'>
+          <div className='pos-logo'>
+            <img src={logo} className="nav-logo" />
+          </div>
+          <div className='pos-boton'>
+            <button className="nav-boton" onClick={() => setCurrentView('login')}>Sign in</button>
+            <button className="nav-boton" onClick={() => setCurrentView('register')}>Register</button>
+          </div>
+        </nav>
+
+        {/*Primera vista de la pagina (sin login)*/}
+        {currentView === 'home' &&(
+          <main className='main-content'>
+            <img src={logo4} alt='Logo Principal' className='main-logo'/>
+            <div className='search-content'>
+              <input
+              type='text'
+              className='search-bar'
+              placeholder={`buscar por ${searchType}`}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <div className='search-filters'>
+                <button className={`filter-btn ${searchType === 'deck' ? 'active' : ''}`} onClick={() => setSearchType('deck')}>Deck</button>
+                <button className={`filter-btn ${searchType === 'card' ? 'active' : ''}`} onClick={() => setSearchType('card')}>Card</button>
+                <button className={`filter-btn ${searchType === 'advance' ? 'active' : ''}`} onClick={() => setSearchType('advance')}>Advance</button>
+              </div>
+            </div>
+          </main>
+        )}
+
+        {/*Footer*/}
+        <footer className='footer'>
+          <div>
+            <p><strong>Proyecto Final - Desarrollo de aplicacion web | Universidad Autonoma de Chile</strong></p>
+            <p>Desarrollada por Fabian Rojas &copy; 2026</p>
+            <p>Los datos e imagenes son proporcionados por la API REST de scryfall</p>
+            <p><a href="https://scryfall.com/" target="_blank" rel="noreferrer"></a></p>
+          </div>
+        </footer>
+      </div>
+    </>
+  )
+}
+
+export default App
+
+/*
+
       <section id="center">
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
@@ -54,6 +112,8 @@ function App() {
             </li>
           </ul>
         </div>
+
+
         <div id="social">
           <svg className="icon" role="presentation" aria-hidden="true">
             <use href="/icons.svg#social-icon"></use>
@@ -115,8 +175,5 @@ function App() {
 
       <div className="ticks"></div>
       <section id="spacer"></section>
-    </>
-  )
-}
 
-export default App
+*/
