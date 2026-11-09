@@ -204,7 +204,83 @@ body {
   margin-bottom: 0;
 }
 
-/*Buscador y filtros*/
+/*Prop Registro y Login*/
+.estado-content{
+  background-color: var(--bg-panel);
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 450px;
+  height: fit-content;
+  border: 1px solid var(--accent-gold);
+  margin: auto;
+}
+
+.register-logo{
+  width: 300px;
+  height: auto;
+  border-radius: 12px;
+  margin: auto;
+}
+
+h2{
+  text-align: center;
+  color: var(--accent-gold);
+  margin-bottom: 2rem;
+}
+
+.register-form{
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.bar-reg{
+  width: 350px;
+  padding: 1rem;
+  font-size: 1.3rem;
+  background-color: var(--bg-panel);
+  border: 1px solid var(--accent-gold);
+  color: var(--text-main);
+  border-radius: 8px;
+}
+
+.reg-boton {
+  background-color: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--accent-gold);
+  padding: 1rem 0.5rem;
+  border-radius: 25px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 12rem;
+  margin: auto;
+}
+
+.reg-boton:hover {
+  background-color: var(--accent-gold);
+  color: var(--bg-main);
+}
+
+.mensaje-error{
+  color: red;
+  margin: 0;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.mensaje-exito{
+  color: green;
+  margin: 0;
+  text-align: center;
+  font-size: 1rem;
+}
+/*Prop Buscador y filtros*/
 .search-container {
   width: 90vw;
   max-width: 800px;
