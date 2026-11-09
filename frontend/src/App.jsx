@@ -2,13 +2,14 @@ import { useState } from 'react'
 import logo from './assets/logo.png'
 import logo4 from './assets/logo4.png'
 import './App.css'
+import Registrar from './componentes/register'
 
 function App() {
   const [currentView, setCurrentView] = useState('home')
   const [searchType, setSearchType] = useState('card')
   const [searchQuery, setSearchQuery] = useState('')
 
-  const Home=() => {
+  const home=() => {
     setSearchQuery('')
     setSearchType('card')
   }
@@ -48,6 +49,9 @@ function App() {
             </div>
           </main>
         )}
+
+        {/*Segunda vista de la pagina (registro)*/}
+        {currentView === 'register' && <Registrar/>}
 
         {/*Footer*/}
         <footer className='footer'>
