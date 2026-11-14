@@ -3,6 +3,7 @@ import logo from './assets/logo.png'
 import logo4 from './assets/logo4.png'
 import './App.css'
 import Registrar from './componentes/register'
+import Login from './componentes/login'
 
 function App() {
   const [currentView, setCurrentView] = useState('home')
@@ -52,6 +53,9 @@ function App() {
 
         {/*Segunda vista de la pagina (registro)*/}
         {currentView === 'register' && <Registrar/>}
+
+        {/*Tercera vista de la pagina (login)*/}
+        {currentView === 'login' && <Login/>}
 
         {/*Footer*/}
         <footer className='footer'>
