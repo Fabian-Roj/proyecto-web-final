@@ -1,61 +1,53 @@
-import { useState } from 'react'
-import logo from './assets/logo.png'
-import logo4 from './assets/logo4.png'
 import './App.css'
 import Registrar from './componentes/register'
 import Login from './componentes/login'
+import Home from './componentes/home'
+import Principal from './componentes/principal'
+import { useEffect, useState } from 'react'
 
 function App() {
-  const [currentView, setCurrentView] = useState('home')
-  const [searchType, setSearchType] = useState('card')
-  const [searchQuery, setSearchQuery] = useState('')
 
-  const home=() => {
-    setSearchQuery('')
-    setSearchType('card')
+  const [currentView, setCurrentView] = useState('home')
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useEffect(() =>{
+    const token = localStorage.getItem('token')
+    if (token) {
+      setIsAuthenticated(true)
+      setCurrentView('principal')
+    }
+  }, [])
+
+  const Logout = () => {
+    localStorage.removeItem('token')
+    setIsAuthenticated(false)
+    setCurrentView('home')
   }
 
   return (
     <>
       <div className='app-container'>
 
-        {/*Barra de navegacion*/}
-        <nav className='navbar'>
-          <div className='pos-logo'>
-            <img src={logo} className="nav-logo" />
-          </div>
-          <div className='pos-boton'>
-            <button className="nav-boton" onClick={() => setCurrentView('login')}>Sign in</button>
-            <button className="nav-boton" onClick={() => setCurrentView('register')}>Register</button>
-          </div>
-        </nav>
-
-        {/*Primera vista de la pagina (sin login)*/}
-        {currentView === 'home' &&(
-          <main className='main-content'>
-            <img src={logo4} alt='Logo Principal' className='main-logo'/>
-            <div className='search-content'>
-              <input
-              type='text'
-              className='search-bar'
-              placeholder={`buscar por ${searchType}`}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <div className='search-filters'>
-                <button className={`filter-btn ${searchType === 'deck' ? 'active' : ''}`} onClick={() => setSearchType('deck')}>Deck</button>
-                <button className={`filter-btn ${searchType === 'card' ? 'active' : ''}`} onClick={() => setSearchType('card')}>Card</button>
-                <button className={`filter-btn ${searchType === 'advance' ? 'active' : ''}`} onClick={() => setSearchType('advance')}>Advance</button>
-              </div>
-            </div>
-          </main>
+        {/*Primera vusta de la pagina (publica)*/}
+        {currentView === 'home' && !isAuthenticated && (
+          <Home setCurrentView={setCurrentView} />
         )}
 
         {/*Segunda vista de la pagina (registro)*/}
-        {currentView === 'register' && <Registrar/>}
+        {currentView === 'register' && !isAuthenticated && <Registrar/>}
 
         {/*Tercera vista de la pagina (login)*/}
-        {currentView === 'login' && <Login/>}
+        {currentView === 'login' && !isAuthenticated && (
+          <Login
+            setIsAuthenticated={setIsAuthenticated}
+            setCurrentView={setCurrentView}
+          />
+        )}
+
+        {/*Cuarta vista de la pagina (logeado)*/}
+        {currentView === 'principal' && isAuthenticated && (
+          <Principal Logout={Logout} />
+        )}
 
         {/*Footer*/}
         <footer className='footer'>

@@ -346,3 +346,154 @@ h2{
   margin-top: auto;
   background-color: rgba(26, 26, 26, 0.9);
 }
+
+/*********/
+
+/* Ajuste mínimo para botones a izquierda y derecha manteniendo el logo centrado */
+.navbar-split {
+  justify-content: space-between;
+}
+
+/* Prototipo 4: Secciones y grilla de 3 columnas */
+.p4-container {
+  width: 90%;
+  max-width: 1300px;
+  margin: 3rem auto;
+  flex: 1;
+}
+
+.p4-seccion {
+  background-color: rgba(42, 42, 42, 0.85);
+  border: 1px solid var(--accent-gold);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 3rem;
+}
+
+.p4-seccion h2 {
+  text-align: left;
+}
+
+.p4-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.p4-card {
+  background-color: var(--bg-main);
+  border: 1px solid var(--accent-gold);
+  border-radius: 12px;
+  padding: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: border-color 0.3s;
+}
+
+.p4-card:hover {
+  border-color: var(--accent-magic);
+}
+
+.p4-card h3 {
+  color: var(--accent-gold);
+  text-align: center;
+}
+
+.p4-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.p4-card-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.p4-card-actions button {
+  flex: 1;
+  background-color: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--accent-gold);
+  border-radius: 20px;
+  padding: 0.4rem;
+  cursor: pointer;
+}
+
+/* Prototipo 5: Vista interior de Mazo / Colección */
+.p5-container {
+  display: flex;
+  gap: 2rem;
+  width: 92%;
+  max-width: 1400px;
+  margin: 3rem auto;
+  flex: 1;
+  align-items: flex-start;
+}
+
+.p5-izq {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.p5-card-preview,
+.p5-add-box,
+.p5-centro,
+.p5-derecha {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--accent-gold);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.p5-card-preview img {
+  width: 100%;
+  border-radius: 10px;
+  display: block;
+}
+
+.p5-add-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.p5-centro {
+  flex: 1;
+}
+
+.p5-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.2rem;
+}
+
+.p5-tabla th,
+.p5-tabla td {
+  border: 1px solid var(--accent-gold);
+  padding: 0.9rem;
+  text-align: center;
+}
+
+.p5-tabla th {
+  color: var(--accent-gold);
+}
+
+.p5-nombre-hover {
+  cursor: pointer;
+}
+
+.p5-nombre-hover:hover {
+  color: var(--accent-gold);
+  text-decoration: underline;
+}
+
+.p5-derecha {
+  width: 300px;
+}

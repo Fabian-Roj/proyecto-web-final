@@ -1,6 +1,7 @@
 import { useState } from "react";
 import api from '../api'
 import logo3 from '../assets/logo3.png'
+import logo from '../assets/logo.png'
 
 
 export default function Registrar(){
@@ -41,50 +42,58 @@ export default function Registrar(){
     }
 
     return (
-        <main className="estado-content">
-            <img src={logo3} alt="Logo registro" className="register-logo"/>
-            <h2>Crear Cuenta</h2> 
+        <div>
+            <nav className='navbar'>
+                <div className='pos-logo'>
+                    <img src={logo} className="nav-logo"/>
+                </div>
+            </nav>
 
-            <form onSubmit={funcReg} className="register-form">
-                <input 
-                    type="text"
-                    placeholder="Usuario"
-                    className="bar-reg"
-                    value={Reg_Username}
-                    onChange={(e) => setRegUsername(e.target.value)}
-                    required
-                />
-                <input 
-                    type="email"
-                    placeholder="Email"
-                    className="bar-reg"
-                    value={Reg_Email}
-                    onChange={(e) => setRegEmail(e.target.value)}
-                    required
-                /> 
-                <input 
-                    type="password"
-                    placeholder="Contraseña"
-                    className="bar-reg"
-                    value={Reg_Password}
-                    onChange={(e) => setRegPassword(e.target.value)}
-                    required
-                />
-                <input 
-                    type="password"
-                    placeholder="Confirmar Contraseña"
-                    className="bar-reg"
-                    value={Reg_ConfirmPassword}
-                    onChange={(e) => setRegConfirmPassword(e.target.value)}
-                    required
-                />
+            <main className="estado-content">
+                <img src={logo3} alt="Logo registro" className="register-logo"/>
+                <h2>Crear Cuenta</h2> 
 
-                {Reg_Error && <p className="mensaje-error">{Reg_Error}</p>}
-                {Reg_Exito && <p className="mensaje-exito">{Reg_Exito}</p>}
+                <form onSubmit={funcReg} className="register-form">
+                    <input 
+                        type="text"
+                        placeholder="Usuario"
+                        className="bar-reg"
+                        value={Reg_Username}
+                        onChange={(e) => setRegUsername(e.target.value)}
+                        required
+                    />
+                    <input 
+                        type="email"
+                        placeholder="Email"
+                        className="bar-reg"
+                        value={Reg_Email}
+                        onChange={(e) => setRegEmail(e.target.value)}
+                        required
+                    /> 
+                    <input 
+                        type="password"
+                        placeholder="Contraseña"
+                        className="bar-reg"
+                        value={Reg_Password}
+                        onChange={(e) => setRegPassword(e.target.value)}
+                        required
+                    />
+                    <input 
+                        type="password"
+                        placeholder="Confirmar Contraseña"
+                        className="bar-reg"
+                        value={Reg_ConfirmPassword}
+                        onChange={(e) => setRegConfirmPassword(e.target.value)}
+                        required
+                    />
 
-                <button type="submit" className="reg-boton">Registrarse</button>
-                    
-            </form>
-        </main>
+                    {Reg_Error && <p className="mensaje-error">{Reg_Error}</p>}
+                    {Reg_Exito && <p className="mensaje-exito">{Reg_Exito}</p>}
+
+                    <button type="submit" className="reg-boton">Registrarse</button>
+                        
+                </form>
+            </main>
+        </div>
     )
 }

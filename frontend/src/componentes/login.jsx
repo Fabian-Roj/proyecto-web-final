@@ -1,8 +1,9 @@
 import { useState } from "react";
 import api from '../api'
 import logo3 from '../assets/logo3.png'
+import logo from '../assets/logo.png'
 
-export default function Login(){
+export default function Login({setIsAuthenticated, setCurrentView}){
     const [Log_Username, setLogUsername] = useState('')
     const [Log_Password, setLogPassword] = useState('')
     const [Log_Error, setLogError] = useState('')
@@ -15,17 +16,17 @@ export default function Login(){
 
         try {
             const response = await api.post('login/',{
-                usuario: Log_Username,
-                contraseña: Log_Password
+                username: Log_Username,
+                password: Log_Password
             })
 
             if (response.status === 200){
-                const token = response.data.token
-                localStorage.setItem('token', token)
-                setLogExito('Sesión iniciada')
-
-                setAuthenticated(true)
-                setCurrenView('main')
+                localStorage.setItem('token', response.data.token)
+                setLogUsername('')
+                setLogPassword('')
+                setLogExito('Sesion iniciada correctamente')
+                setIsAuthenticated(true)
+                setCurrentView('principal')
             }
         } catch (error) {
             if (error.response && error.response.data === 400){
@@ -37,34 +38,43 @@ export default function Login(){
     }
 
     return (
-        <main className="estado-content">
-            <img src={logo3} alt="Logo registro" className="register-logo"/>
-            <h2>Iniciar sesion</h2> 
+        <div>
+            <nav className='navbar'>
+                <div className='pos-logo'>
+                    <img src={logo} className="nav-logo"/>
+                </div>
+            </nav>
 
-            <form onSubmit={funcLog} className="register-form">
-                <input 
-                    type="text"
-                    placeholder="Usuario"
-                    className="bar-reg"
-                    value={Log_Username}
-                    onChange={(e) => setLogUsername(e.target.value)}
-                    required
-                /> 
-                <input 
-                    type="password"
-                    placeholder="Contraseña"
-                    className="bar-reg"
-                    value={Log_Password}
-                    onChange={(e) => setLogPassword(e.target.value)}
-                    required
-                />
 
-                {Log_Error && <p className="mensaje-error">{Log_Error}</p>}
-                {Log_Exito && <p className="mensaje-exito">{Log_Exito}</p>}
+            <main className="estado-content">
+                <img src={logo3} alt="Logo registro" className="register-logo"/>
+                <h2>Iniciar sesion</h2> 
 
-                <button type="submit" className="reg-boton">Ingresar</button>
-                    
-            </form>
-        </main>
+                <form onSubmit={funcLog} className="register-form">
+                    <input 
+                        type="text"
+                        placeholder="Usuario"
+                        className="bar-reg"
+                        value={Log_Username}
+                        onChange={(e) => setLogUsername(e.target.value)}
+                        required
+                    /> 
+                    <input 
+                        type="password"
+                        placeholder="Contraseña"
+                        className="bar-reg"
+                        value={Log_Password}
+                        onChange={(e) => setLogPassword(e.target.value)}
+                        required
+                    />
+
+                    {Log_Error && <p className="mensaje-error">{Log_Error}</p>}
+                    {Log_Exito && <p className="mensaje-exito">{Log_Exito}</p>}
+
+                    <button type="submit" className="reg-boton">Ingresar</button>
+                        
+                </form>
+            </main>
+        </div>
     )
 } 
