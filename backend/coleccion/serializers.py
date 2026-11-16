@@ -35,11 +35,12 @@ class CartaSerializer(serializers.ModelSerializer):
 
 class MazoSerializer(serializers.ModelSerializer):
     categoria_nombre = serializers.CharField(source='get_categoria_display', read_only=True)
+    creador = serializers.CharField(source='usuario.username', read_only=True)
 
     class Meta:
         model = Mazo
-        fields = ['id', 'nombre', 'categoria', 'categoria_nombre', 'comandante', 'imagen_comandante', 'es_public', 'fecha_creacion']
-        read_only_fields = ['id', 'fecha_creacion']
+        fields = ['id', 'nombre', 'categoria', 'categoria_nombre', 'comandante', 'imagen_comandante', 'es_public', 'fecha_creacion', 'creador']
+        read_only_fields = ['id', 'fecha_creacion', 'creador']
 
     def validate_nombre(self, value):
         if len(value.strip()) < 3:

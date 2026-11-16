@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import api from '../api'
 import logo from '../assets/logo.png'
@@ -6,32 +6,73 @@ import logo from '../assets/logo.png'
 const CARTA_DORSO = 'https://cards.scryfall.io/normal/front/0/0/0000579f-7b35-4ed3-b44c-db2a538066fe.jpg'
 
 export default function Principal({ Logout }) {
-  // Navegación interna entre Prototipo 4 (lista) y Prototipo 5 (detalle)
-  const [itemActivo, setItemActivo] = useState(null) // { tipo: 'mazo' | 'coleccion', data: obj }
 
-  // --- ESTADOS PROTOTIPO 4 ---
+  const [itemActivo, setItemActivo] = useState(null) 
+
   const [mazos, setMazos] = useState([])
   const [colecciones, setColecciones] = useState([])
-  const [formTipo, setFormTipo] = useState(null) // 'mazo' | 'coleccion' | null
+  const [formTipo, setFormTipo] = useState(null)
   const [editandoId, setEditandoId] = useState(null)
   const [nombreForm, setNombreForm] = useState('')
   const [cartaRefForm, setCartaRefForm] = useState('')
   const [errorForm, setErrorForm] = useState('')
 
-  // --- ESTADOS PROTOTIPO 5 ---
   const [cartasLista, setCartasLista] = useState([])
   const [cartaHoverImg, setCartaHoverImg] = useState(CARTA_DORSO)
   const [busquedaCarta, setBusquedaCarta] = useState('')
   const [errorCarta, setErrorCarta] = useState('')
   const [mensajeP5, setMensajeP5] = useState('')
-  const [seleccionadas, setSeleccionadas] = useState([]) // IDs de filas marcadas
+  const [seleccionadas, setSeleccionadas] = useState([])
   const [edicionesDisponibles, setEdicionesDisponibles] = useState([])
   const [edicionElegida, setEdicionElegida] = useState('')
   const [cantidadEditada, setCantidadEditada] = useState(1)
 
+  const [sugerenciasCarta, setSugerenciasCarta] = useState([])
+  const [mostrarSugerenciasCarta, setMostrarSugerenciasCarta] = useState(false)
+  const [indiceSugerencia, setIndiceSugerencia] = useState(-1)
+  const [bloquearAutoCarta, setBloquearAutoCarta] = useState(false)
+  const addBoxRef = useRef(null)
+
   useEffect(() => {
     cargarMazosYColecciones()
   }, [])
+
+  useEffect(() => {
+    const manejarClicFuera = (e) => {
+      if (addBoxRef.current && !addBoxRef.current.contains(e.target)) {
+        setMostrarSugerenciasCarta(false)
+      }
+    }
+    document.addEventListener('mousedown', manejarClicFuera)
+    return () => document.removeEventListener('mousedown', manejarClicFuera)
+  }, [])
+
+  useEffect(() => {
+    if (!itemActivo) return
+    const query = busquedaCarta.trim()
+
+    if (bloquearAutoCarta || query.length < 2) {
+      setSugerenciasCarta([])
+      setMostrarSugerenciasCarta(false)
+      return
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await axios.get(
+          `https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(query)}`
+        )
+        const nombres = (res.data.data || []).slice(0, 6)
+        setSugerenciasCarta(nombres)
+        setMostrarSugerenciasCarta(nombres.length > 0)
+      } catch {
+        setSugerenciasCarta([])
+        setMostrarSugerenciasCarta(false)
+      }
+    }, 200)
+
+    return () => clearTimeout(timer)
+  }, [busquedaCarta, bloquearAutoCarta, itemActivo])
 
   const cargarMazosYColecciones = async () => {
     try {
@@ -74,14 +115,13 @@ export default function Principal({ Logout }) {
     })
   }
 
-  // --- ACCIONES PROTOTIPO 4 ---
   const abrirFormulario = (tipo, item = null) => {
     setFormTipo(tipo)
     setErrorForm('')
     if (item) {
       setEditandoId(item.id)
       setNombreForm(item.nombre || '')
-      setCartaRefForm((tipo === 'mazo' ? item.comandante : item.carta_portada) || '')
+      setCartaRefForm((tipo === 'mazo' ? item.comandante : item.carta_port) || '')
     } else {
       setEditandoId(null)
       setNombreForm('')
@@ -112,8 +152,8 @@ export default function Principal({ Logout }) {
       } else {
         const payload = {
           nombre: nombreForm,
-          carta_portada: cartaRefForm,
-          imagen_portada: imgUrl
+          carta_port: cartaRefForm,
+          imagen_port: imgUrl
         }
         if (editandoId) {
           const res = await api.put(`colecciones/${editandoId}/`, payload)
@@ -145,16 +185,18 @@ export default function Principal({ Logout }) {
     }
   }
 
-  // --- TRANSICIÓN A PROTOTIPO 5 ---
   const abrirDetalleP5 = async (tipo, item) => {
     setItemActivo({ tipo, data: item })
     setSeleccionadas([])
     setEdicionesDisponibles([])
     setBusquedaCarta('')
+    setSugerenciasCarta([])
+    setMostrarSugerenciasCarta(false)
+    setIndiceSugerencia(-1)
     setErrorCarta('')
     setMensajeP5('')
     setCartaHoverImg(
-      (tipo === 'mazo' ? item.imagen_comandante : item.imagen_portada) || CARTA_DORSO
+      (tipo === 'mazo' ? item.imagen_comandante : item.imagen_port) || CARTA_DORSO
     )
 
     try {
@@ -169,12 +211,60 @@ export default function Principal({ Logout }) {
     }
   }
 
-  // --- ACCIONES PROTOTIPO 5 ---
+  const manejarCambioBusquedaCarta = (e) => {
+    setBusquedaCarta(e.target.value)
+    setBloquearAutoCarta(false)
+    setIndiceSugerencia(-1)
+    setErrorCarta('')
+  }
+
+  const seleccionarSugerenciaCarta = (nombreElegido) => {
+    setBloquearAutoCarta(true)
+    setBusquedaCarta(nombreElegido)
+    setSugerenciasCarta([])
+    setMostrarSugerenciasCarta(false)
+    setIndiceSugerencia(-1)
+  }
+
+  const manejarTecladoCarta = (e) => {
+    if (!mostrarSugerenciasCarta || sugerenciasCarta.length === 0) return
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setIndiceSugerencia((prev) => (prev < sugerenciasCarta.length - 1 ? prev + 1 : 0))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setIndiceSugerencia((prev) => (prev > 0 ? prev - 1 : sugerenciasCarta.length - 1))
+    } else if (e.key === 'Enter' && indiceSugerencia >= 0) {
+      e.preventDefault()
+      seleccionarSugerenciaCarta(sugerenciasCarta[indiceSugerencia])
+    } else if (e.key === 'Escape') {
+      setMostrarSugerenciasCarta(false)
+      setIndiceSugerencia(-1)
+    }
+  }
+
+  const resaltarCoincidencia = (nombre, consulta) => {
+    const limpio = consulta.trim()
+    if (!limpio) return nombre
+    const escapado = limpio.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const partes = nombre.split(new RegExp(`(${escapado})`, 'gi'))
+    return partes.map((parte, i) =>
+      parte.toLowerCase() === limpio.toLowerCase() ? (
+        <strong key={i}>{parte}</strong>
+      ) : (
+        <span key={i}>{parte}</span>
+      )
+    )
+  }
+
   const anadirCartaScryfall = async (e) => {
     e.preventDefault()
     if (!busquedaCarta.trim()) return
     setErrorCarta('')
     setMensajeP5('')
+    setMostrarSugerenciasCarta(false)
+    setSugerenciasCarta([])
 
     try {
       const scryRes = await axios.get(
@@ -208,7 +298,7 @@ export default function Principal({ Logout }) {
         tipo: c.type_line || 'Card',
         costo_mana: Math.round(c.cmc || 0),
         es_legal_commander: c.legalities?.commander === 'legal',
-        imagen_url: imgNormal
+        imagen: imgNormal
       })
 
       const payload = esMazo
@@ -301,9 +391,6 @@ export default function Principal({ Logout }) {
     }
   }
 
-  // =========================================================
-  // RENDER PROTOTIPO 5 (Detalle de Mazo / Colección)
-  // =========================================================
   if (itemActivo) {
     return (
       <>
@@ -329,15 +416,45 @@ export default function Principal({ Logout }) {
               <img src={cartaHoverImg} alt='Vista previa carta' />
             </div>
 
-            <form onSubmit={anadirCartaScryfall} className='p5-add-box'>
-              <input
-                type='text'
-                className='bar-reg'
-                style={{ width: '100%' }}
-                placeholder={`Agregar carta a ${itemActivo.data.nombre}...`}
-                value={busquedaCarta}
-                onChange={(e) => setBusquedaCarta(e.target.value)}
-              />
+            <form onSubmit={anadirCartaScryfall} className='p5-add-box' ref={addBoxRef}>
+              <div className='p5-autocomplete-wrapper'>
+                <input
+                  type='text'
+                  className='bar-reg'
+                  style={{ width: '100%' }}
+                  placeholder={`Agregar carta a ${itemActivo.data.nombre}...`}
+                  value={busquedaCarta}
+                  onChange={manejarCambioBusquedaCarta}
+                  onKeyDown={manejarTecladoCarta}
+                  onFocus={() => {
+                    if (sugerenciasCarta.length > 0 && !bloquearAutoCarta) {
+                      setMostrarSugerenciasCarta(true)
+                    }
+                  }}
+                  autoComplete='off'
+                />
+
+                {mostrarSugerenciasCarta && sugerenciasCarta.length > 0 && (
+                  <ul className='autocomplete-dropdown'>
+                    {sugerenciasCarta.map((nombre, idx) => (
+                      <li
+                        key={`${nombre}-${idx}`}
+                        className={`autocomplete-item ${idx === indiceSugerencia ? 'active' : ''}`}
+                        onMouseEnter={() => setIndiceSugerencia(idx)}
+                        onMouseDown={(e) => {
+                          e.preventDefault()
+                          seleccionarSugerenciaCarta(nombre)
+                        }}
+                      >
+                        <span className='autocomplete-text'>
+                          {resaltarCoincidencia(nombre, busquedaCarta)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
               {errorCarta && <p className='mensaje-error'>{errorCarta}</p>}
               <button type='submit' className='reg-boton'>
                 Añadir
@@ -442,9 +559,6 @@ export default function Principal({ Logout }) {
     )
   }
 
-  // =========================================================
-  // RENDER PROTOTIPO 4 (Mis Mazos y Mis Colecciones)
-  // =========================================================
   return (
     <>
       <nav className='navbar navbar-split'>
@@ -559,7 +673,7 @@ export default function Principal({ Logout }) {
               >
                 <h3>{col.nombre}</h3>
                 <img
-                  src={col.imagen_portada || CARTA_DORSO}
+                  src={col.imagen_port || CARTA_DORSO}
                   alt={col.nombre}
                 />
                 {col.fecha_creacion && (
